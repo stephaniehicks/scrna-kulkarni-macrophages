@@ -9,28 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Organize directory
-
-```{r}
-library(here)
-```
-
-First, we create the folder to store reference files (e.g. genome and cDNA) and quantification files (quantified counts) from salmon.  
-
-```{r}
-if(!dir.exists(here("references", "salmon_files"))){
-  dir.create(here("references", "salmon_ref_files"))
-}
-if(!dir.exists(here("01_quantification", "salmon_quants"))){
-  dir.create(here("01_quantification", "salmon_quants"))
-}
-```
-
 # Quantification 
 
 We will do quantification with alevin from Salmon:
 
-## Download files
+## Download GENCODE files
 
 We need to download 3 files (mouse):
 
@@ -39,32 +22,8 @@ We need to download 3 files (mouse):
 3. `gencode.vM25.annotation.gtf.gz` - gene annotation on the reference chromosomes (i.e. for humans, these are chromosomes 1 to 22, X, and Y), i.e. locations of genes and other information about the genes, gene structure
   * Gene transfer format (GTF) is a file format used to hold information about gene structure. It is a tab-delimited text format based on the general feature format (GFF), but contains some additional conventions specific to gene information.
 
+See/run the `download_gencode_files.R` script. 
 
-```{r}
-library(here)
 
-# Download GENCODE Files
-# download GENCODE primary assembly fasta file
-if(!file.exists(here("references", "salmon_files", "GRCm38.primary_assembly.genome.fa.gz"))){
-  tar_gz_file <- "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M25/GRCm38.primary_assembly.genome.fa.gz"
-  download.file(tar_gz_file, 
-                destfile = here("references", "salmon_files", "GRCm38.primary_assembly.genome.fa.gz"), 
-                method = "wget")
-}
 
-# download GENCODE transcripts fasta file
-if(!file.exists(here("references", "salmon_files",, "gencode.vM25.transcripts.fa.gz"))){
-  tar_gz_file <- "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M25/gencode.vM25.transcripts.fa.gz"
-  download.file(tar_gz_file,
-                destfile = here("references", "salmon_files",, "gencode.vM25.transcripts.fa.gz"),
-                method = "wget")
-}
 
-# download GENCODE gtf file
-if(!file.exists(here("references", "salmon_files", "gencode.vM25.annotation.gtf.gz"))){
-  tar_gz_file <- "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M25/gencode.vM25.annotation.gtf.gz"
-  download.file(tar_gz_file, 
-                destfile = here("references", "salmon_files", "gencode.vM25.annotation.gtf.gz"), 
-                method = "wget")
-}
-```

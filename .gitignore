@@ -1,1 +1,4 @@
 .Rproj.user/
+
+# folder to ignore
+salmon_index_files/
