@@ -33,6 +33,13 @@ if(!file.exists(here("salmon_index_files", "gencode.vM25.transcripts.fa.gz"))){
                 method = "wget")
 }
 
+# download GENCODE gtf file
+if(!file.exists(here("salmon_index_files", "gencode.vM25.annotation.gtf.gz"))){
+  tar_gz_file <- "ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M25/gencode.vM25.annotation.gtf.gz"
+  download.file(tar_gz_file, 
+                destfile = here("salmon_index_files", "gencode.vM25.annotation.gtf.gz"), 
+                method = "wget")
+}
 
 
 # Make files for pipelines (code adapted from https://github.com/csoneson/rna_velocity_quant)
@@ -44,7 +51,7 @@ suppressPackageStartupMessages({
   library(GenomicFeatures)
   library(BSgenome)
 })
-source(here("mouse_cortex", "code", "quantify-salmon-helpers.R")) 
+source(here("01_quantification", "quantify-salmon-helpers.R")) 
 
 
 #######################
@@ -52,10 +59,10 @@ source(here("mouse_cortex", "code", "quantify-salmon-helpers.R"))
 #######################
 ## FASTA file
 # Gtf path
-gtf_file <- here("mouse_cortex", "salmon_files", "gencode.vM25.annotation.gtf.gz")
+gtf_file <- here("salmon_index_files", "gencode.vM25.annotation.gtf.gz")
 
 # Read genomic (DNA) sequence from FASTA file
-genome_fasta <- here("mouse_cortex", "salmon_files", "GRCm38.primary_assembly.genome.fa.gz") 
+genome_fasta <- here("salmon_index_files", "GRCm38.primary_assembly.genome.fa.gz") 
 genome <- Biostrings::readDNAStringSet(genome_fasta)
 names(genome) <- sapply(strsplit(names(genome), " "), .subset, 1) # creates chr1, etc
 
@@ -63,11 +70,12 @@ names(genome) <- sapply(strsplit(names(genome), " "), .subset, 1) # creates chr1
 tx <- extractTxSeqs(gtf = gtf_file, genome = genome, type = "spliced")
 
 # Write FASTA file
-Biostrings::writeXStringSet(tx, file = here("mouse_cortex", "salmon_files", "gencode.vM25.transcripts.mouse.fa.gz"), compress = T) # Compresses fa while saving, rather than compress later (takes a few min)
+Biostrings::writeXStringSet(tx, file = here("salmon_index_files", "gencode.vM25.transcripts.mouse.fa.gz"), 
+                            compress = T) # Compresses fa while saving, rather than compress later (takes a few min)
 
 ## tx2gene
 # Read gtf
-gtf <- rtracklayer::import(here("mouse_cortex", "salmon_files",
+gtf <- rtracklayer::import(here("salmon_index_files",
                                 "gencode.vM25.annotation.gtf.gz")) 
 gtftx <- subset(gtf, type == "transcript")
 gtfex <- subset(gtf, type == "exon")
@@ -81,10 +89,13 @@ df <- data.frame(gtftx, stringsAsFactors = FALSE) %>%
                      dplyr::summarize(transcript_length = sum(width)),
                    by = "transcript_id")
 
-# Write table as txt and rds
+# Write table as txt, tsv, and rds
 write.table(df %>% dplyr::select(transcript_id, gene_id), 
-            file = here("mouse_cortex", "salmon_files", "gencode.vM25.transcripts.tx2gene.mouse.txt"), 
+            file = here("salmon_index_files", "gencode.vM25.transcripts.tx2gene.mouse.txt"), 
             sep = "\t", quote = FALSE, row.names = FALSE, 
             col.names = FALSE)
-saveRDS(df, file = here("mouse_cortex", "salmon_files", "gencode.vM25.transcripts.tx2gene.mouse.rds"))
+readr::write_tsv(x = df %>% dplyr::select(transcript_id, gene_id), 
+            file = here("salmon_index_files", "gencode.vM25.transcripts.tx2gene.mouse.tsv"),
+            col_names = FALSE)
+saveRDS(df, file = here("salmon_index_files", "gencode.vM25.transcripts.tx2gene.mouse.rds"))
 

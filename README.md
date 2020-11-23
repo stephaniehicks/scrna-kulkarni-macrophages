@@ -17,11 +17,93 @@ The FASTQ files can only be accessed from the brahma server (after JHU VPN) and 
 
 ### `SingleCellExperiment` object
 
-A `SingleCellExperiment` object is available here: 
+At the end of the Preprocessing section, a `SingleCellExperiment` object is created and available here: 
 
 - TBA 
 
 ## Preporocessing 
 
-1. The reads were quantified with salmon/alevin to create a `SingleCellExperiment` object with the `tximeta` R/Bioconductor package. 
-2. TBA
+This [website](https://combine-lab.github.io/alevin-tutorial/2018/setting-up-resources/) is helpful for setting up the resources needed to run `salmon alevin`. 
+
+### Download GENCODE files
+
+Run the shell script `01_quantification/download-gencode-files.R`. This downloads GENCODE files and creates the files necessary for alevin. Reference files were obtained for mouse release version M25. 
+
+1. `GRCm38.primary_assembly.genome.fa.gz` - nucleotide (DNA) sequences of the **GRCm38 primary genome assembly** (chromosomes and scaffolds -- i.e. unplaced scaffolds?)
+2. `gencode.vM25.transcripts.fa.gz` - nucleotide (DNA) sequences of **all transcripts** on reference chromosomes (Note: We are going to extract the transcript sequences using \#1 and \#3, so this will on longer be used.)
+3. `gencode.vM25.annotation.gtf.gz` - gene annotation on the reference chromosomes (i.e. for humans, these are chromosomes 1 to 22, X, and Y), i.e. locations of genes and other information about the genes, gene structure
+  * Gene transfer format (GTF) is a file format used to hold information about gene structure. It is a tab-delimited text format based on the general feature format (GFF), but contains some additional conventions specific to gene information.
+
+The specific locations of where the files were pulled from are from here:
+
+- `ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M25/GRCm38.primary_assembly.genome.fa.gz`
+- `ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M25/gencode.vM25.transcripts.fa.gz`
+- `ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_mouse/release_M25/gencode.vM25.annotation.gtf.gz`
+
+The `01_quantification/download-gencode-files.R` script also creates a file `gencode.vM25.transcripts.tx2gene.mouse.tsv`. This file maps each transcript ID to a gene ID.
+
+### Create decoys for `salmon alevin`
+
+The decoy sequence is going to be the whole genome sequence (`GRCm38.primary_assembly.genome.fa.gz`). You can read more about decoy sequences in Salmon below:
+
+* https://salmon.readthedocs.io/en/latest/salmon.html#preparing-transcriptome-indices-mapping-based-mode
+* https://github.com/COMBINE-lab/SalmonTools/blob/master/README.md
+
+Source for code: https://combine-lab.github.io/alevin-tutorial/2019/selective-alignment/
+
+To use a decoy, we need to create two files:
+
+1. `decoys.txt` is the names of the genome targets (decoys), will be used in the `-d` parameter in `build-index-salmon.sh`
+2. `gentrome_transcripts_mouse.fa.gz` is a concatenated FASTA transcriptome, will be used in the `-t` parameter in `build-index-salmon.sh` (see below). Note that you need to recreate this in every pipeline.
+
+These two files are created in the `01_quantification/create-decoys-salmon.sh` and will both be used `01_quantification/build-index-salmon.sh` file to build the salmon index (see next section).
+
+### Using `salmon alevin` for quantification
+
+The reads were quantified with `salmon alevin` to create a `SingleCellExperiment` object with the `tximeta` R/Bioconductor package. 
+
+#### Install and build `salmon index` 
+
+This part will have to be done for each user. 
+I installed the salmon 1.3.0 binary in my home directory here `/users/shicks1/src/`. 
+
+To install salmon v1.3.0: 
+```{bash}
+cd /users/shicks1/src/
+wget https://github.com/COMBINE-lab/salmon/releases/download/v1.2.1/salmon-1.2.1_linux_x86_64.tar.gz
+tar xzvf salmon-1.2.1_linux_x86_64.tar.gz
+rm salmon-1.2.1_linux_x86_64.tar.gz
+```
+
+Also, make sure this is in the `.bash_profile` file
+```{bash}
+PATH=$PATH:/users/shicks1/src/salmon-latest_linux_x86_64/bin
+```
+
+You can check to make sure salmon has been upgraded correctly using `salmon -h` inside terminal (or help with specific parts of using salmon using e.g. `salmon index -h` for help with the index step). 
+
+OK, we are ready to use `salmon`. 
+The `-t` argument is the input transcripts file. 
+The `-i` argument is the index file to create. 
+The `-d` argument is the decoy sequence. 
+The `--keepDuplicates` argument forces all duplicate transcripts (for example, multiple unspliced transcript of the same gene that are identical for example) that appear in the input will be retained and quantified separately. 
+If you keep the duplicates they will be assigned identical expression levels since salmon can’t tell them apart. 
+When you aggregate on the gene level, this will not make a difference any more. 
+Therefore, I do not keep the duplicates as we are interested in gene level aggregation. 
+The `--gencode` flag will handle the composite fasta headers in GENCODE transcript fasta files and split the transcript name at the first '|' character. 
+The `--threads` argument says how many threads to use when building the index. 
+
+There is a script `build-index-salmon.sh` in the `/mouse_cortex` folder that was used to run this code with 4 cores. The index is built from the combined FASTA file.
+
+The salmon index is built using the `01_quantification/build-index-salmon.sh` file (used 4 cores). The index uses the `decoys.txt` and is built from the combined FASTA file (`gentrome_transcripts_mouse.fa.gz`).
+
+#### Running `salmon alevin`
+
+We will now use the index created by `build-index-salmon.sh`.
+See the `01_quantification/run-alevin.sh` file.
+
+- The quantification step using `salmon alevin` is performed using `run-alevin.sh`.
+
+For both scripts, you must specify which pipeline you are running as a parameter in the script.
+
+
