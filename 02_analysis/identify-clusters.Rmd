@@ -27,7 +27,7 @@ if(!file.exists(here("02_analysis"))){
       dir.create(here("02_analysis"))
 }
 
-sce <- readRDS(file = here("data", "sce_mouse_TH_TL.rds"))
+sce <- readRDS(file = here("data", "sce_combined_TH_TL.rds"))
 
 # Check sce object
 colData(sce)

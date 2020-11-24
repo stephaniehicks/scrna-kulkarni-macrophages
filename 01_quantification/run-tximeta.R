@@ -14,6 +14,11 @@ suppressPackageStartupMessages({
   library(org.Mm.eg.db) # org package for mouse
 })
 
+# create new data folder to store R objects
+if(!file.exists(here("data"))){
+  dir.create(here("data"))
+}
+
 # create linkedTranscriptome for decoys pipeline
 index_dir = here("salmon_index_files", "gencode.vM25-salmon-index-v1.0.0-mouse-withdecoys")
 fasta_path = here("salmon_index_files", "gencode.vM25.transcripts.mouse.fa.gz")
@@ -45,8 +50,7 @@ for(i in seq_len(length(sample_names))){
     colData(se)$sample_id <- rep(sample_names[i], ncol(se))
 
     # Save as a SummarizedExperiment object
-    saveRDS(se, file = here("01_quantification", "salmon_quants", 
-                             paste0("se_", sample_names[i], ".rds")))
+    saveRDS(se, file = here("data", paste0("se_", sample_names[i], ".rds")))
     
     counts_mat <- cbind(counts_mat, assay(se, "counts"))
     variance_mat <- cbind(variance_mat, assay(se, "variance"))
@@ -75,9 +79,5 @@ colData(sce)
 assayNames(sce)
 rowRanges(sce)
 
-# save combined sce data
-if(!file.exists(here("data"))){
-  dir.create(here("data"))
-}
-saveRDS(sce, file = here("data", "sce_mouse_TH_TL.rds"))
+saveRDS(sce, file = here("data", "sce_combined_TH_TL.rds"))
 
