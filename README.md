@@ -110,5 +110,5 @@ Here we import the `_quant` files produced by `salmon alevin` into R/Bioconducto
 
 ### Identify clusters
 
-We identify clusters in the `02_analysis/identify_clusters.Rmd`. 
+We identify clusters in the `02_analysis/identify-clusters.Rmd`. 
 

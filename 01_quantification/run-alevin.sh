@@ -6,7 +6,9 @@
 
 d=/fastscratch/myscratch/shicks1/scrna-kulkarni-macrophages
 
-# set project directory path (TH sample) (about 1-2 hrs per sample)
+## Two samples: TH, TL (each sample takes about 1-1.5hrs)
+
+# set project directory path (TH sample)
 cd $d/fastq_files/Kulkarni_LMMP_SK-TH/Kulkarni_SK-TH_MissingLibrary_1_HKJ5JBCXY
 
 salmon alevin -l ISR \

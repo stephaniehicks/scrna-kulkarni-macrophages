@@ -3,3 +3,7 @@
 # folder to ignore
 salmon_index_files/
 fastq_files/
+
+# 01_quantification folders to ignore
+01_quantification/log/
+01_quantification/salmon_quants/
