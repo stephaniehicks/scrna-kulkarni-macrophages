@@ -101,7 +101,7 @@ See the `01_quantification/run-alevin.sh` file.
 
 #### Create `SingleCellExperiment` object
 
-Here we import the `_quant` files produced by `salmon alevin` into R/Bioconductor using the `tximeta` package. This package creates separate `SummarizedExperiment` object (`se_TH.rds` and `se_TL.rds`) and saved in the `/data` folder.
+Here we import the `_quant` files produced by `salmon alevin` into R/Bioconductor using the `tximeta` package with the `01_quantification/run-tximeta.R` script. The script creates separate `SummarizedExperiment` object (`se_TH.rds` and `se_TL.rds`) and saved in the `/data` folder.
 
 Next, we combine these two `SummarizedExperiment` objects and we convert it to one `SingleCellExperiment` (`sce`) object (`sce_combined_TH_TL.rds`). This `sce` object is saved as a `.RDS` file in the `data/sce_combined_TH_TL.rds` folder. 
 
