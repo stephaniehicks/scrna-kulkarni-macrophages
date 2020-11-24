@@ -9,17 +9,19 @@ This repository contains the code and analyses for the analysis of scRNA-seq mac
 
 ## Data 
 
-### FASTQ files
+### Raw FASTQ files
 
 The FASTQ files can only be accessed from the brahma server (after JHU VPN) and are available here: 
 
 - `/mnt/morbo/Data/Sequencing/Raw_Backup/Kulkarni/Kulkarni_10X/fastqs/`
 
+These were copied over to JHPCE and the analysis was performed there.
+
 ### `SingleCellExperiment` object
 
-At the end of the Preprocessing section, a `SingleCellExperiment` object is created and available here: 
+At the end of the _Preprocessing_ section, a `SingleCellExperiment` object is created and available here: 
 
-- TBA 
+- `/fastscratch/myscratch/shicks1/scrna-kulkarni-macrophages/data/sce_combined_TH_TL.rds` 
 
 ## Preprocessing 
 
