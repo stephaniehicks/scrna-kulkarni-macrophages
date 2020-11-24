@@ -101,10 +101,14 @@ See the `01_quantification/run-alevin.sh` file.
 
 #### Create `SingleCellExperiment` object
 
-Here we import the `quant` files into R/Bioconductor using `tximeta`.
+Here we import the `_quant` files produced by `salmon alevin` into R/Bioconductor using the `tximeta` package. This package creates a `SummarizedExperiment` object. Finally, we convert these objects to a `SingleCellExperiment` (`sce`) object. These `sce` objects (`sce_TH.rds` and `sce_TL.rds`) are saved as `.RDS` file in the `01_quantification/salmon_quants` folder. 
+
+- Useful file: https://mikelove.github.io/alevin2bioc/articles/alevin2bioc.html
 
 
 ## Data analysis 
 
+### Identify clusters
 
+We identify clusters in the `02_analysis/identify_clusters.Rmd`. 
 

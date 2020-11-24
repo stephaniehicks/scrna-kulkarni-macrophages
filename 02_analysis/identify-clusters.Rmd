@@ -1,0 +1,32 @@
+---
+title: "Analysis of mouse macrophages"
+author: "Stephanie Hicks"
+date: "11/18/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load libraries
+
+```{r}
+suppressPackageStartupMessages({
+  library(here)
+  library(SingleCellExperiment)
+})
+```
+
+
+# Load data 
+
+We begin by loading in the two `SingleCellExperiment` (`sce`) objects and combining them into one `sce` object. 
+```{r}
+if(!file.exists(here("02_analysis"))){
+      dir.create(here("02_analysis"))
+}
+
+sce <- readRDS(file = here("data", "sce_macrophages.rds"))
+```
+
