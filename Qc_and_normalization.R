@@ -26,7 +26,7 @@ exprs(lmmp_mf_sce) <- log2(
 #library(AnnotationHub)
 ah <- AnnotationHub()
 ens.mm.v97 <- ah[['AH73905']]
-rowData(lmmp_mf_sce)$chr.loc <- mapIds(ens.mm.v97, keys=rowData(lmmp_mf_sce)$gene_id,
+rowData(lmmp_mf_sce)$chr.loc <- mapIds(ens.mm.v97, keys=rownames(lmmp_mf_sce),
                                    keytype="GENEID", column="SEQNAME")
 
 #Quality Control
