@@ -43,8 +43,6 @@ hist(all.out$PValue[all.out$Total <= limit & all.out$Total > 0],
 
 lmmp_mf_sce <- lmmp_mf_sce[,which(e.out$FDR <= 0.001)]
 
-
-#Quality Control
 bcrank <- barcodeRanks(counts(lmmp_mf_sce))
 uniq <- !duplicated(bcrank$rank)
 plot(bcrank$rank[uniq], bcrank$total[uniq], log="xy", xlab = "Rank", ylab = "Total UMI count", cex.lab = 1.2)
@@ -53,6 +51,7 @@ abline(h=metadata(bcrank)$knee, col = "dodgerblue", lty = 2)
 legend("bottomleft", legend = c("Inflection", "Knee"), col = c("darkgreen", "dodgerblue"), lty = 2, cex = 1.2)
 dev.off()
 
+#Quality Control
 is.mito <- rowData(lmmp_mf_sce)$chr.loc == "chrM"
 stats <- perCellQCMetrics(lmmp_mf_sce, subsets=list(Mito=which(is.mito)))
 qc <- quickPerCellQC(stats, percent_subsets="subsets_Mito_percent",
