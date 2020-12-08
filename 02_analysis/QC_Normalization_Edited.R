@@ -98,13 +98,11 @@ lmmp_mf_sce <- lmmp_mf_sce[,!qc$discard]
 set.seed(1000)
 clusters <- quickCluster(lmmp_mf_sce)
 table(clusters)
-deconv_lmmp_mf_sce <- calculateSumFactors(lmmp_mf_sce, clusters=clusters)
-summary(deconv_lmmp_mf_sce)
-
-log_lmmp_mf_sce <- logNormCounts(lmmp_mf_sce)
-summary(sizeFactors(log_lmmp_mf_sce))
+lmmp_mf_sce <- computeSumFactors(lmmp_mf_sce, cluster = clusters)
+lmmp_mf_sce <- logNormCounts(lmmp_mf_sce)
+summary(sizeFactors(lmmp_mf_sce))
 
 
-plot(librarySizeFactors(log_lmmp_mf_sce), deconv_lmmp_mf_sce, pch=16,
+plot(librarySizeFactors(lmmp_mf_sce), sizeFactors(lmmp_mf_sce), pch=16,
      xlab="Library size factors", ylab="Deconvolution factors", log="xy")
 abline(a=0, b=1, col="red")
