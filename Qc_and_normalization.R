@@ -26,8 +26,10 @@ exprs(lmmp_mf_sce) <- log2(
 #library(AnnotationHub)
 ah <- AnnotationHub()
 ens.mm.v97 <- ah[['AH73905']]
-rowData(lmmp_mf_sce)$chr.loc <- mapIds(ens.mm.v97, keys=rownames(lmmp_mf_sce),
-                                   keytype="GENEID", column="SEQNAME")
+#rowData(lmmp_mf_sce)$chr.loc <- mapIds(ens.mm.v97, keys=rownames(lmmp_mf_sce),
+                                   #keytype="GENEID", column="SEQNAME")
+
+rowData(lmmp_mf_sce)$chr.loc <- rowRanges(lmmp_mf_sce)$seqnames
 
 #Quality Control
 
@@ -62,7 +64,11 @@ unfiltered <- lmmp_mf_sce
 is.mito <- rowData(lmmp_mf_sce)$chr.loc == "MT"
 stats <- perCellQCMetrics(lmmp_mf_sce, subsets=list(Mito=which(is.mito)))
 qc <- quickPerCellQC(stats, percent_subsets="subsets_Mito_percent",
-                     batch = lmmp_mf_sce$treatment)
+                     batch = lmmp_mf_sce$sample_id)
+
+discard.features <- isOutlier(lmmp_mf_sce$detected, type ="lower", log=TRUE, 
+                              batch=lmmp_mf_sce$sample_id)
+
 lmmp_mf_sce <- lmmp_mf_sce[,!qc$discard]
 
 colData(unfiltered) <- cbind(colData(unfiltered), stats)
