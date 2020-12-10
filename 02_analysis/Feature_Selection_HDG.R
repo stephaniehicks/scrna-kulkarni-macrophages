@@ -32,3 +32,4 @@ ggplot(pd, aes(x=dim1, y=dim2, colour=phenoid)) + geom_point() +
   facet_wrap(~resid_type, scales="free", nrow=2) +
   ggtitle("PCA applied to null residuals of high deviance genes")
 
+#
