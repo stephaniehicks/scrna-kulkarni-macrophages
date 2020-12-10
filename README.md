@@ -113,5 +113,14 @@ Next, we combine these two `SummarizedExperiment` objects and we convert it to o
 
 ### Identify clusters
 
+#### Quality control
+
+The previously acquired `SingleCellExperiment` (`sce`) object (`sce_combined_TH_TL.rds`) is loaded and important rowData information is first examined. Notice that the chromosomal location is stored in the `rowRanges`as a rle format so to extract the list format conversion to character is performed and appended to the `sce` object. Empty droplets are examined and excluded.  
+
+Quality control per mitochrondrial genes percentage metric is performed via `quickPerCellQC` from the `scater` package. Low quality libraries are reviewed,plotted and subsequently discarded.
+
+#### Normalization
+Normalization is performed by deconvolution.
+
 We identify clusters in the `02_analysis/identify-clusters.Rmd`. 
 
