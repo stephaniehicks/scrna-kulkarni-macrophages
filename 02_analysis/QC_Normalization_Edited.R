@@ -91,7 +91,7 @@ gridExtra::grid.arrange(
 
 unfiltered <- lmmp_mf_sce
 lmmp_mf_sce <- lmmp_mf_sce[,!qc$discard]
-
+sce.nonorm <- lmmp_mf_sce
 #Normalization
 #library(scran)
 set.seed(1000)
