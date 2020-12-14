@@ -2,15 +2,11 @@
 #if(!require(scry)){
 # BiocManager::install("scry")
 
-
-library(scry)
-sce.nonorm <- devianceFeatureSelection(sce.nonorm,
-                         assay= "counts", batch=treatment)
-plot(rowData(sce.nonorm)$binomial_deviance, type="l", xlab="ranked genes",
-     ylab="binomial deviance", main="Feature Selection with Deviance")
-abline(v=2000, lty=2, col="red")
-
-#Dimension Reduction w/nullresiduals
+#Removing lowly expressed genes, after QC
+num_reads <- 1
+num_cells <- 0.01*ncol(sce.nonorm)
+keep <- which(DelayedArray::rowSums(counts(sce.nonorm) >= num_reads ) >= num_cells)
+sce.nonorm <- sce.nonorm[keep,]
 
 sce.nonorm <- nullResiduals(sce.nonorm, assay="counts", type="deviance")
 sce.nonorm <- nullResiduals(sce.nonorm, assay="counts", type="pearson")
