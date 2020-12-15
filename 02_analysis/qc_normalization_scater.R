@@ -207,3 +207,4 @@ data.frame(colData(lmmp_mf_sce), libsizfact = librarySizeFactors(lmmp_mf_sce)) %
 #   Use of the deconvolution size factors adjusts for these biases to improve 
 #   normalization accuracy for downstream applications.
 
+saveRDS(lmmp_mf_sce, file = here("data", "sce_norm.rds"))
