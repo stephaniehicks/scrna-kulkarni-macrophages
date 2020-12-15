@@ -133,7 +133,7 @@ colData(lmmp_mf_sce)$discard.features <-
             batch = lmmp_mf_sce$sample_id)
 attr(lmmp_mf_sce$discard.features, "thresholds")
 
-###### Set qc threshold for 
+###### Set qc threshold for total UMI counts
 colData(lmmp_mf_sce)$discard.sum <- 
   isOutlier(lmmp_mf_sce$sum, type = "lower", log = TRUE, nmads = 3,
                          batch = lmmp_mf_sce$sample_id)
