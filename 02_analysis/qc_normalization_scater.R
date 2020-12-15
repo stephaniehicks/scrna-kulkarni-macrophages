@@ -1,8 +1,7 @@
-#Quality control using scater
+# Quality control using scater
 
-#R initiation
+# R initiation
 suppressPackageStartupMessages({
-  
   library(here)
   library(scater)
   library(scran)
@@ -12,25 +11,16 @@ suppressPackageStartupMessages({
   library(DropletUtils)
 })
 
-#Data loading
-#library(SingleCellExperiment)
+# Load data: SingleCellExperiment object
 lmmp_mf_sce <- readRDS(here("data", "sce_combined_TH_TL.rds")) 
 
-#library(scater)
-rownames(lmmp_mf_sce) <- uniquifyFeatureNames(
+# make gene names unique
+rownames(lmmp_mf_sce) <- scater::uniquifyFeatureNames(
   rowData(lmmp_mf_sce)$gene_id, rowData(lmmp_mf_sce)$SYMBOL)
 
-exprs(lmmp_mf_sce) <- log2(
-  calculateCPM(lmmp_mf_sce, use.size.factors = FALSE) + 1)
-
-rowRanges.out <- rowRanges(lmmp_mf_sce)
-rowData(lmmp_mf_sce)$chr.loc <- rowRanges.out@seqnames
-rowData(lmmp_mf_sce)$chr.loc <- as.character(rowData(lmmp_mf_sce)$chr.loc)
-
-#Examine and exclude expty droplets with Dropletutils
-#library(DropletUtils)
+# Examine and exclude empty droplets with Dropletutils
 set.seed(100)
-e.out <- emptyDrops(counts(lmmp_mf_sce))
+e.out <- DropletUtils::emptyDrops(counts(lmmp_mf_sce))
 
 summary(e.out$FDR <= 0.001)
 table(Sig=e.out$FDR <= 0.001, Limited=e.out$Limited)
@@ -52,7 +42,7 @@ legend("bottomleft", legend = c("Inflection", "Knee"), col = c("darkgreen", "dod
 dev.off()
 
 #Quality Control
-is.mito <- rowData(lmmp_mf_sce)$chr.loc == "chrM"
+is.mito <- as.character(rowRanges(lmmp_mf_sce)@seqnames) == "chrM"
 stats <- perCellQCMetrics(lmmp_mf_sce, subsets=list(Mito=which(is.mito)))
 qc <- quickPerCellQC(stats, percent_subsets="subsets_Mito_percent",
                      batch = lmmp_mf_sce$sample_id)
