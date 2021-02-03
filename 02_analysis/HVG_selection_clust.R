@@ -41,23 +41,34 @@ metadata(sce.mnn)$merge.info$lost.var
 ######[1,] 0.02952356 0.04297248
 
 
-#Graph based clustering, MNN
+#Graph based clustering, use MNN-corrected data
 library(scran)
-g.mnn <- buildSNNGraph(sce.mnn, use.dimred = "corrected")
+g.mnn <- buildSNNGraph(sce, use.dimred = "corrected")
 clusters.mnn <- igraph::cluster_walktrap(g.mnn)$membership
 table.mnn <- table(Cluster = clusters.mnn, Batch = sce.mnn$batch)
+colLabels(sce) <- factor(clusters.mnn)
 
+#TSNE plot by batch or cluster
 set.seed(0010101010)
-sce.mnn <- runTSNE(sce.mnn, dimred = "corrected")
-plotTSNE(sce.mnn, colour_by = "batch")
-
+sce <- runTSNE(sce, subset_row = chosen.hvgs, dimred = "corrected")
+TSNEplot0 <- plotTSNE(sce, colour_by = "sample_id")
+TSNEplot0
 library(scater)
-colLabels(sce.mnn) <- factor(clusters.mnn)
-plotReducedDim(sce.mnn, "TSNE", colour_by="label")
+TSNEplot1 <- plotReducedDim(sce, "TSNE", colour_by="label", text_by="label")
+TSNEplot1
+
+#UMAP plot by batch or cluster
+sce <- runUMAP(sce, dimred = "corrected")
+UMAPplot0 <- plotReducedDim(sce, dimred = "UMAP", colour_by = "sample_id")
+UMAPplot0
+UMAPplot1 <- plotUMAP(sce, colour_by = "label", text_by="label")
+UMAPplot1
+
+
+saveRDS(sce, file = here("data", "sce_mnn_alt.rds"))
 saveRDS(sce.mnn, file = here("data", "sce_mnn.rds"))
 
-#Or proceed to dimensionality reduction w/o batch effect correction, 
-#change subject when fit
+#Or proceed to dimensionality reduction w/o batch effect correction
 library(Seurat)
 set.seed(101010011)
 rawsce <- runPCA(sce, subset_row = chosen.hvgs, 
@@ -79,7 +90,11 @@ table(clust)
 
 library(scater)
 colLabels(rawsce) <- factor(clust)
-plotReducedDim(rawsce, "TSNE", colour_by="label")
+plotReducedDim(rawsce, "PCA", colour_by="label", text_by = "label")
+plotReducedDim(rawsce, "TSNE", colour_by="label", text_by = "label")
+plotReducedDim(rawsce, "UMAP", colour_by="label", text_by = "label")
+
+saveRDS(rawsce, file = here("data", "sce_raw.rds"))
 
 #k-means clustering
 #determining best K
@@ -101,6 +116,6 @@ table(clust.kmeans$cluster)
 
 
 colLabels(rawsce) <- factor(clust.kmeans$cluster)
-plotReducedDim(rawsce, "TSNE", colour_by="label")
+plotReducedDim(rawsce, "TSNE", colour_by="label", text_by = "label")
 
 
