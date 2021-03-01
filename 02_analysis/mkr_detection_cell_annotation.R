@@ -21,15 +21,6 @@ plotScoreHeatmap(pred, show.labels = TRUE,  annotation_col=
 tab <- table(Assigned=pred$pruned.labels, Cluster=colLabels(sce))
 pheatmap(log2(tab+10), color=colorRampPalette(c("white", "blue"))(101))
 
-#Use MetaNeighbor for automatic annotation
-library(MetaNeighbor)
-data(sce)
-data(GOmouse)
-AUROC_scores = MetaNeighbor(dat = sce,
-                            experiment_labels = as.numeric(factor(sce$sample_id)),
-                            celltype_labels = metadata(colData(sce))[["colLabels"]],
-                            genesets = GOmouse,
-                            bplot = TRUE)
 #Marker Gene detection
 
 ###Combine every testing regime for comparison
@@ -60,18 +51,11 @@ logFCs <- getMarkerEffects(best.set)
 library(pheatmap)
 pheatmap(logFCs, breaks=seq(-5, 5, length.out=101))
 
-###Find cluster specific markers, upregulated, some PVAL.
-markers.up1 <- findMarkers(
-  sce, pval.type="some", direction="up")
-chosen <- "22"
-interesting.up1 <- markers.up1[[chosen]]
-interesting.up1[1:10,1:3]
-
 
 ###Find cluster specific markers, upregulated, some PVAL, batch effects blocked
 markers.up2 <- findMarkers(sce, pval.type= "some" , block=sce$sample_id,
                      direction="up")
-chosen <- "20"
+chosen <- "14"
 interesting.up2 <- markers.up2[[chosen]]
 interesting.up2[1:10,1:3]
 
