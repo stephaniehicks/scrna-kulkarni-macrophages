@@ -54,3 +54,25 @@ salmon alevin -l ISR \
     --numCellBootstraps 30
     
 #P60
+salmon alevin -l ISR \
+    --index /media/2/Reference/mm/vM25/salmon_index \
+    -1 p60_1_S24_L001_R1_001.fastq.gz p60_1_S24_L002_R1_001.fastq.gz p60_2_S16_L001_R1_001.fastq.gz p60_2_S16_L002_R1_001.fastq.gz p60_3_S18_L001_R1_001.fastq.gz p60_3_S18_L002_R1_001.fastq.gz p60_4_S14_L001_R1_001.fastq.gz p60_4_S14_L002_R1_001.fastq.gz p60_a_S8_L001_R1_001.fastq.gz p60_a_S8_L002_R1_001.fastq.gz p60_b_S18_L001_R1_001.fastq.gz p60_b_S18_L002_R1_001.fastq.gz p60_c_S19_L001_R1_001.fastq.gz p60_c_S19_L002_R1_001.fastq.gz p60_d_S1_L001_R1_001.fastq.gz p60_d_S1_L002_R1_001.fastq.gz \
+    -2 p60_1_S24_L001_R2_001.fastq.gz p60_1_S24_L002_R2_001.fastq.gz p60_2_S16_L001_R2_001.fastq.gz p60_2_S16_L002_R2_001.fastq.gz p60_3_S18_L001_R2_001.fastq.gz p60_3_S18_L002_R2_001.fastq.gz p60_4_S14_L001_R2_001.fastq.gz p60_4_S14_L002_R2_001.fastq.gz p60_a_S8_L001_R2_001.fastq.gz p60_a_S8_L002_R2_001.fastq.gz p60_b_S18_L001_R2_001.fastq.gz p60_b_S18_L002_R2_001.fastq.gz p60_c_S19_L001_R2_001.fastq.gz p60_c_S19_L002_R2_001.fastq.gz p60_d_S1_L001_R2_001.fastq.gz p60_d_S1_L002_R2_001.fastq.gz \
+    --tgMap /media/2/Reference/mm/vM25/txp2gene.tsv \
+    --chromiumV3 \
+    --threads 6\
+    --output /home/yongbao/scrna-kulkarni-macrophages/01_quantification/salmon_quants/p60_quant \
+    --dumpFeatures --dumpBfh \
+    --numCellBootstraps 30
+
+#P61
+salmon alevin -l ISR \
+    --index /media/2/Reference/mm/vM25/salmon_index \
+    -1 p61_1_S19_L001_R1_001.fastq.gz p61_1_S19_L002_R1_001.fastq.gz p61_2_S17_L001_R1_001.fastq.gz p61_2_S17_L002_R1_001.fastq.gz p61_3_S1_L001_R1_001.fastq.gz p61_3_S1_L002_R1_001.fastq.gz p61_4_S4_L001_R1_001.fastq.gz p61_4_S4_L002_R1_001.fastq.gz p61_a_S6_L001_R1_001.fastq.gz p61_a_S6_L002_R1_001.fastq.gz p61_b_S16_L001_R1_001.fastq.gz p61_b_S16_L002_R1_001.fastq.gz p61_c_S11_L001_R1_001.fastq.gz p61_c_S11_L002_R1_001.fastq.gz p61_d_S2_L001_R1_001.fastq.gz p61_d_S2_L002_R1_001.fastq.gz \
+    -2 p61_1_S19_L001_R2_001.fastq.gz p61_1_S19_L002_R2_001.fastq.gz p61_2_S17_L001_R2_001.fastq.gz p61_2_S17_L002_R2_001.fastq.gz p61_3_S1_L001_R2_001.fastq.gz p61_3_S1_L002_R2_001.fastq.gz p61_4_S4_L001_R2_001.fastq.gz p61_4_S4_L002_R2_001.fastq.gz p61_a_S6_L001_R2_001.fastq.gz p61_a_S6_L002_R2_001.fastq.gz p61_b_S16_L001_R2_001.fastq.gz p61_b_S16_L002_R2_001.fastq.gz p61_c_S11_L001_R2_001.fastq.gz p61_c_S11_L002_R2_001.fastq.gz p61_d_S2_L001_R2_001.fastq.gz p61_d_S2_L002_R2_001.fastq.gz \
+    --tgMap /media/2/Reference/mm/vM25/txp2gene.tsv \
+    --chromiumV3 \
+    --threads 6\
+    --output /home/yongbao/scrna-kulkarni-macrophages/01_quantification/salmon_quants/p61_quant \
+    --dumpFeatures --dumpBfh \
+    --numCellBootstraps 30
