@@ -80,3 +80,4 @@ salmon alevin -l ISR \
     --output /home/yongbao/scrna-kulkarni-macrophages/01_quantification/salmon_quants/p61_quant \
     --dumpFeatures --dumpBfh \
     --numCellBootstraps 30
+    
