@@ -113,14 +113,17 @@ Next, we combine these two `SummarizedExperiment` objects and we convert it to o
 
 ### Identify clusters
 
-#### Quality control
+#### Quality control and normalization
+We perform QC and normalization of data in `02_analysis/qc_normalization_scater.R`
 
-The previously acquired `SingleCellExperiment` (`sce`) object (`sce_combined_TH_TL.rds`) is loaded and important rowData information is first examined. Notice that the chromosomal location is stored in the `rowRanges`as a rle format so to extract the list format conversion to character is performed and appended to the `sce` object. Empty droplets are examined and excluded.  
+The previously acquired `SingleCellExperiment` (`sce`) object (`sce_combined_TH_TL.rds`) is loaded and important rowData information is first examined. Notice that the chromosomal location is stored in the `rowRanges`as a rle format so to extract the list format conversion to character is performed and appended to the `sce` object. Empty droplets are examined by kneeplot and excluded by `emptydrops()` function with the `Dropletutils` package.  
 
 Quality control per mitochrondrial genes percentage metric is performed via `quickPerCellQC` from the `scater` package. Low quality libraries are reviewed,plotted and subsequently discarded.
 
-#### Normalization
-Normalization is performed by deconvolution.
+Data normalization is performed by deconvolution.  We see that the deconvolution size factors exhibit cell type-specific deviations from the library size factors. Use of the deconvolution size factors adjusts for these biases to improve normalization accuracy for downstream applications.
+
+#### Variant/Deviant gene selection, dimensionality reduction and clustering
+We perform genes of interest selection, dimensionality reduction and clustering in `02_analysis/HVG_selection_clust.R` and `02_analysis/HDG_selection_clust.R`, with highly variant approach (using `scran/getTopHVGs`) and highly deviant approach (using `scry/nullResiduals`) respectively. 
 
 We identify clusters in the `02_analysis/identify-clusters.Rmd`. 
 
