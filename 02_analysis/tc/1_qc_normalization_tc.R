@@ -12,13 +12,22 @@ suppressPackageStartupMessages({
 })
 
 # Load data: SingleCellExperiment object
-sce <- readRDS(here("data", "tc", "sce_tc_original.rds")) 
+sce <- readRDS(here("data", "tc", "sce_p10.rds")) 
 
 # make gene names unique
 rownames(sce) <- scater::uniquifyFeatureNames(
   rowData(sce)$gene_id, rowData(sce)$SYMBOL)
 
+# Check alevinQC results
+#Check file integrity
+baseDir <- here("01_quantification", "salmon_quants", "sample_p10_quant")
+checkAlevinInputFiles(baseDir = baseDir)
 
+outputDir <- here("Figures", "tc")
+alevinQCReport(baseDir = baseDir, sampleId = "p10", 
+               outputFile = "alevinReport_p10.pdf", 
+               outputFormat = "pdf_document",
+               outputDir = outputDir, forceOverwrite = TRUE)
 
 ##################################
 #### Identify empty droplets #####
@@ -42,14 +51,6 @@ e.out <- DropletUtils::emptyDrops(counts(sce))
 
 summary(e.out$FDR <= 0.001)
 table(Sig=e.out$FDR <= 0.001, Limited=e.out$Limited)
-
-
-#Mode    TRUE    NA's 
-#logical    3204       4 
-
-#      Limited
-#  Sig  TRUE
-#  TRUE 3204
 
 
 
@@ -105,12 +106,6 @@ stats <- scater::perCellQCMetrics(sce, subsets=list(Mito=which(is.mito)))
 qc <- quickPerCellQC(stats, percent_subsets="subsets_Mito_percent",
                      batch = sce$sample_id)
 colSums(as.matrix(qc))
-# > colSums(as.matrix(qc))
-# low_lib_size            low_n_features high_subsets_Mito_percent 
-# 1                       47                       252 
-# discard 
-# 276 
-
 
 # Plot num of detected genes (x-axis) vs % mito (y-axis)
 plotColData(sce, x="detected", y="subsets_Mito_percent", 
@@ -121,16 +116,12 @@ plotColData(sce, x="detected", y="subsets_Mito_percent",
 #   will consider two thresholds (both very liberal)
 
 ###### Set qc threshold for % mito
-# Below are two thresholds for % mito: one adaptive and one fixed (based on plot above)
-colData(sce)$discard.mito.adapt <- 
-  isOutlier(sce$subsets_Mito_percent, type ="higher", 
-            log=FALSE, nmads = 10, batch=sce$sample_id)
-attr(sce$discard.mito.adapt, "thresholds")
+###### Adaptive threshold not expected to work well due to very high mito contents
 
 colData(sce)$discard.mito.fixed <- sce$subsets_Mito_percent > 30
 table(sce$sample_id, sce$discard.mito.fixed)
 
-#w/fixed threshold, too many cells are being thrown
+#w/ a 30% fixed threshold, too many cells are being thrown. SK suggests a 60% cutoff to preserve possible biologics. 
 #      FALSE TRUE
 #p10   318   18
 #p11   502  125
@@ -139,7 +130,11 @@ table(sce$sample_id, sce$discard.mito.fixed)
 #p60   541  314
 #p61   251  114
 
+colData(sce)$discard.mito.fixed <- sce$subsets_Mito_percent > 60
+table(sce$sample_id, sce$discard.mito.fixed)
 
+#Label those cells with 30%<n<60% mito contents in coldata
+sce$highmito <- sce$subsets_Mito_percent > 30 & sce$subsets_Mito_percent <60
 
 ###### Set qc threshold for num detected features
 colData(sce)$discard.features <- 
@@ -151,7 +146,7 @@ attr(sce$discard.features, "thresholds")
 ###### Set qc threshold for total UMI counts
 colData(sce)$discard.sum <- 
   isOutlier(sce$sum, type = "lower", log = TRUE, nmads = 3,
-                         batch = sce$sample_id)
+            batch = sce$sample_id)
 attr(sce$discard.sum, "thresholds")
 
 ###### Plot results
@@ -185,19 +180,15 @@ gridExtra::grid.arrange(
 
 # Final qc discard column
 sce$discard <- sce$discard.sum | 
-                       sce$discard.features | 
-                       sce$discard.mito.fixed
+  sce$discard.features | 
+  sce$discard.mito.fixed
 
 data.frame("total" = sum(sce$discard.sum), 
            "num_features" = sum(sce$discard.features),
            "perc_mito" = sum(sce$discard.mito.fixed), 
            "final_discard" = sum(sce$discard))
 
-# This seems reasonable and very liberal in what we put through qc;
-#   Might have to readjust later, but for now we assume it's OK
-
 sce <- sce[,!sce$discard]
-
 
 ##################################
 ######### Normalization ##########
@@ -215,11 +206,15 @@ data.frame(colData(sce), libsizfact = librarySizeFactors(sce)) %>%
   geom_point() + scale_x_log10() + scale_y_log10() + 
   xlab("Library size factors") + ylab("Deconvolution factors")
 
-# Interpretation: We see that the deconvolution size factors exhibit 
-#   cell type-specific deviations from the library size factors. 
-#   This is consistent with the presence of composition biases that are 
-#   introduced by strong differential expression between cell types. 
-#   Use of the deconvolution size factors adjusts for these biases to improve 
-#   normalization accuracy for downstream applications.
+sce10 <- sce
+#####################################
+######### Integrating data ##########
+#####################################
 
-saveRDS(sce, file = here("data", "sce_tc_norm.rds"))
+universe <- intersect(rownames(sce10), rownames(sce11), rownames(sce20), rownames(sce21),
+                      rownames(sce60), rownames(sce61))
+length(universe)
+
+
+
+
